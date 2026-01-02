@@ -1,4 +1,4 @@
-import random
+import random, wget, magic, hashlib
 
 # Function to generate a random password with at least one character from each class with the number of digits specified
 
@@ -65,4 +65,43 @@ def is_string_found_in_file(file_path, search_string_list=[]):
     except Exception as e:
         print(f"An error occurred: {e}")
         return False 
+    
 
+# Function to download a specificied file from the internet
+# Requires wget module, pip install wget / sudo apt install python3-wget
+def GetURL(url, protocol, filename):
+    address = protocol + "://" + url
+    print(f"Downloading address: {address}")
+    file = wget.download(address, filename)
+    print(f"\n File downloaded as {file}")
+
+
+
+# Function requires https://pypi.org/project/python-magic/ 
+# pip install python-magic / sudo apt-get install libmagic1, sudo apt install python3-magic
+def DoStaticAnalysis(filepath):
+    try:
+        seperator = "*********************************"
+        
+        print(seperator)
+        print(f"File Being Analyzed: {filepath}")
+        print(seperator)
+        
+        file=open(filepath,"rb").read()
+        
+        md5hash = hashlib.md5(file).hexdigest()
+        sha256hash = hashlib.sha256(file).hexdigest()
+        print(seperator)
+        print("File Hash")
+        pprint(seperator)
+        print(f"MD5 Hash: {md5hash}")
+        print(f"SHA256 Hash: {sha256hash}")
+        
+        print(seperator)
+        print("Magic Analysis")
+        print(seperator)
+        print(magic.from_file(filepath))
+       
+
+    except FileNotFoundError:
+        print(f"File {filepath} not found")
