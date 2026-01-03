@@ -101,7 +101,6 @@ def Get_DLLImports(filepath):
                 else:
                     print(str(DLLimport.ordinal))
 
-
 def Set_LogFileDateFormat(log_file_name, log_file_ext):
     log_file_date_format = datetime.datetime.now().strftime("%a_%m_%d_%Y_%I_%M_%S_%p_%Z")
     return log_file_name + "_" + log_file_date_format + "." + log_file_ext
@@ -126,6 +125,10 @@ def Do_StaticAnalysis(filepath):
         
         print(seperator)
         logfile.write(seperator)
+        logfile.write("\n")
+
+        ran_on = datetime.datetime.now().strftime("%A %m %d %Y %I:%M:%S %p %z")
+        logfile.write(f"Script Ran At: {ran_on}")
         logfile.write("\n")
 
         print(f"File Being Analyzed: {filepath}")
@@ -181,8 +184,8 @@ def Do_StaticAnalysis(filepath):
         logfile.write("\n")
 
         results = Get_StringsInFile(filepath)
-        print(results)
-        logfile.write(results)
+        #print(results)
+        #logfile.write(results)
         logfile.write("\n")
 
 
@@ -199,8 +202,10 @@ def Do_StaticAnalysis(filepath):
 
         Get_DLLImports(filepath)
 
-       
-
+        print(seperator)
+        logfile.write(seperator)
+        logfile.write("\n")
+    
     except FileNotFoundError:
         print(f"File {filepath} not found")
 
