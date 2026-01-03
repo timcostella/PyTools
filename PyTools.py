@@ -1,4 +1,4 @@
-import random, wget, magic, hashlib, os, pefile
+import random, wget, magic, hashlib, os, pefile, datetime
 
 # Function to generate a random password with at least one character from each class with the number of digits specified
 
@@ -80,16 +80,15 @@ def Get_FileHash(filepath):
     file=open(filepath,"rb").read()
     md5hash = hashlib.md5(file).hexdigest()
     sha256hash = hashlib.sha256(file).hexdigest()
-    print(f"MD5 Hash: {md5hash}")
-    print(f"SHA256 Hash: {sha256hash}")
+    return [f"MD5 Hash: {md5hash}", f"SHA256 Hash: {sha256hash}"]
 
 def Get_FileType(filepath):
-    print(magic.from_file(filepath))
+    return magic.from_file(filepath)
 
 def Get_StringsInFile(filepath):
     command = f"strings {filepath}"
     output = os.popen(command)
-    print(output.read())
+    return output.read()
 
 def Get_DLLImports(filepath):
     pe = pefile.PE(filepath)
@@ -100,9 +99,13 @@ def Get_DLLImports(filepath):
                 if DLLimport.name != None:
                     print (DLLimport.name)
                 else:
-                    print str(DLLimport.ordinal)
+                    print(str(DLLimport.ordinal))
 
 
+def Set_LogFileDateFormat(log_file_name, log_file_ext):
+    log_file_date_format = datetime.datetime.now().strftime("%a_%m_%d_%Y_%I_%M_%S_%p_%Z")
+    return log_file_name + "_" + log_file_date_format + "." + log_file_ext
+    
 
 
 # Function requires https://pypi.org/project/python-magic/ 
@@ -114,35 +117,87 @@ def Get_DLLImports(filepath):
 # Function requires os module
 # Function requires hashlib module
 
-def DoStaticAnalysis(filepath):
+def Do_StaticAnalysis(filepath):
+    logfilepath = "/tmp/" + Set_LogFileDateFormat("Do_StaticAnalysis","txt")
+    logfile = open(logfilepath, "a")
+
     try:
         seperator = "*********************************"
         
         print(seperator)
+        logfile.write(seperator)
+        logfile.write("\n")
+
         print(f"File Being Analyzed: {filepath}")
-        print(seperator)
+        logfile.write(f"File Being Analyzed: {filepath}")
+        logfile.write("\n")
         
+        print(seperator)
+        logfile.write(seperator)
+        logfile.write("\n")
         
         print(seperator)
+        logfile.write(seperator)
+        logfile.write("\n")
+
         print("File Hash")
+        logfile.write("File Hash")
+
         print(seperator)
-        Get_FileHash(filepath)
+        logfile.write(seperator)
+        logfile.write("\n")
+
+        hash_values = Get_FileHash(filepath)
+        for hash_val in hash_values:
+            print(hash_val)
+            logfile.write(hash_val)
+            logfile.write("\n")
 
         
         print(seperator)
         print("Magic Analysis")
+        logfile.write(seperator)
+        logfile.write("\n")
+
         print(seperator)
-        Get_FileType(filepath)
+        logfile.write(seperator)
+        logfile.write("\n")
+
+        results = Get_FileType(filepath)
+        print(results)
+        logfile.write(results)
+        logfile.write("\n")
 
 
         print(seperator)
+        logfile.write(seperator)
+        logfile.write("\n")
+
         print("Strings")
-        print(seperator)
-        Get_StringsInFile(filepath)
+        logfile.write("Strings")
 
         print(seperator)
-        print("DLL Imports")
+        logfile.write(seperator)
+        logfile.write("\n")
+
+        results = Get_StringsInFile(filepath)
+        print(results)
+        logfile.write(results)
+        logfile.write("\n")
+
+
         print(seperator)
+        logfile.write(seperator)
+        logfile.write("\n")
+
+        print("DLL Imports")
+        logfile.write("DLL Imports")
+
+        print(seperator)
+        logfile.write(seperator)
+        logfile.write("\n")
+
+        Get_DLLImports(filepath)
 
        
 
