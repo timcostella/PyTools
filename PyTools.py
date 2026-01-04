@@ -105,7 +105,19 @@ def Set_LogFileDateFormat(log_file_name, log_file_ext):
     log_file_date_format = datetime.datetime.now().strftime("%a_%m_%d_%Y_%I_%M_%S_%p_%Z")
     return log_file_name + "_" + log_file_date_format + "." + log_file_ext
     
-
+def Write_Log_Header(logfile, seperator, section_name):
+    logfile.write("\n")
+    logfile.write("\n")
+    print(seperator)
+    logfile.write(seperator)
+    logfile.write("\n")
+    print(section_name)
+    logfile.write(section_name)
+    logfile.write("\n")
+    print(seperator)
+    logfile.write(seperator)
+    logfile.write("\n")
+    logfile.write("\n")
 
 # Function requires https://pypi.org/project/python-magic/ 
 # pip install python-magic / sudo apt-get install libmagic1, sudo apt install python3-magic
@@ -122,33 +134,14 @@ def Do_StaticAnalysis(filepath):
 
     try:
         seperator = "*********************************"
-        
-        print(seperator)
-        logfile.write(seperator)
-        logfile.write("\n")
 
         ran_on = datetime.datetime.now().strftime("%A %m %d %Y %I:%M:%S %p %z")
-        logfile.write(f"Script Ran At: {ran_on}")
-        logfile.write("\n")
 
-        print(f"File Being Analyzed: {filepath}")
-        logfile.write(f"File Being Analyzed: {filepath}")
-        logfile.write("\n")
-        
-        print(seperator)
-        logfile.write(seperator)
-        logfile.write("\n")
-        
-        print(seperator)
-        logfile.write(seperator)
-        logfile.write("\n")
+        Write_Log_Header(logfile, seperator, f"Script Ran At: {ran_on}")
 
-        print("File Hash")
-        logfile.write("File Hash")
+        Write_Log_Header(logfile, seperator, f"File Being Analyzed: {filepath}")
 
-        print(seperator)
-        logfile.write(seperator)
-        logfile.write("\n")
+        Write_Log_Header(logfile, seperator, "File Hash")
 
         hash_values = Get_FileHash(filepath)
         for hash_val in hash_values:
@@ -156,55 +149,17 @@ def Do_StaticAnalysis(filepath):
             logfile.write(hash_val)
             logfile.write("\n")
 
-        
-        print(seperator)
-        print("Magic Analysis")
-        logfile.write(seperator)
-        logfile.write("\n")
+        Write_Log_Header(logfile, seperator, "Magic Analysis")
 
-        print(seperator)
-        logfile.write(seperator)
-        logfile.write("\n")
-
-        results = Get_FileType(filepath)
-        print(results)
-        logfile.write(results)
-        logfile.write("\n")
-
-
-        print(seperator)
-        logfile.write(seperator)
-        logfile.write("\n")
-
-        print("Strings")
-        logfile.write("Strings")
-
-        print(seperator)
-        logfile.write(seperator)
-        logfile.write("\n")
-
+        Write_Log_Header(logfile, seperator, "Strings")
         results = Get_StringsInFile(filepath)
         #print(results)
         #logfile.write(results)
         logfile.write("\n")
 
-
-        print(seperator)
-        logfile.write(seperator)
-        logfile.write("\n")
-
-        print("DLL Imports")
-        logfile.write("DLL Imports")
-
-        print(seperator)
-        logfile.write(seperator)
-        logfile.write("\n")
+        Write_Log_Header(logfile, seperator, "DLL Imports")
 
         Get_DLLImports(filepath)
-
-        print(seperator)
-        logfile.write(seperator)
-        logfile.write("\n")
     
     except FileNotFoundError:
         print(f"File {filepath} not found")
