@@ -1,5 +1,7 @@
 import random, wget, magic, hashlib, os, pefile, datetime
 
+
+
 # Function to generate a random password with at least one character from each class with the number of digits specified
 
 def random_password_gen( password_length=25):
@@ -128,41 +130,59 @@ def Write_Log_Header(logfile, seperator, section_name):
 # Function requires os module
 # Function requires hashlib module
 
-def Do_StaticAnalysis(filepath):
+def Do_StaticAnalysis(filepath=None):
+    if filepath == None:
+        print("You must specify a filepath to a file to examine, ex: /home/tim/badfile.exe")
+        return
+    
+    if not os.path.exists(filepath):
+        print(f"File not found at: {filepath}")
+        return
+
     logfilepath = "/tmp/" + Set_LogFileDateFormat("Do_StaticAnalysis","txt")
     logfile = open(logfilepath, "a")
 
-    try:
-        seperator = "*********************************"
+    strings_logfilepath = "/tmp/" + Set_LogFileDateFormat("Do_StaticAnalysis_strings","txt")
+    strings_logfile = open(strings_logfilepath, "a")
+    
+    seperator = "*********************************"
 
-        ran_on = datetime.datetime.now().strftime("%A %m %d %Y %I:%M:%S %p %z")
+    ran_on = datetime.datetime.now().strftime("%A %m %d %Y %I:%M:%S %p %z")
 
-        Write_Log_Header(logfile, seperator, f"Script Ran At: {ran_on}")
+    Write_Log_Header(logfile, seperator, f"Script Ran At: {ran_on}")
 
-        Write_Log_Header(logfile, seperator, f"File Being Analyzed: {filepath}")
+    Write_Log_Header(logfile, seperator, f"File Being Analyzed: {filepath}")
 
-        Write_Log_Header(logfile, seperator, "File Hash")
+    Write_Log_Header(logfile, seperator, "File Hash")
 
-        hash_values = Get_FileHash(filepath)
-        for hash_val in hash_values:
-            print(hash_val)
-            logfile.write(hash_val)
-            logfile.write("\n")
-
-        Write_Log_Header(logfile, seperator, "Magic Analysis")
-
-        Write_Log_Header(logfile, seperator, "Strings")
-        results = Get_StringsInFile(filepath)
-        #print(results)
-        #logfile.write(results)
+    hash_values = Get_FileHash(filepath)
+    for hash_val in hash_values:
+        print(hash_val)
+        logfile.write(hash_val)
         logfile.write("\n")
 
-        Write_Log_Header(logfile, seperator, "DLL Imports")
+    Write_Log_Header(logfile, seperator, "Magic Analysis")
+    results = Get_FileType(filepath)
+    print(results)
+    logfile.write(results)
 
-        Get_DLLImports(filepath)
+
+    Write_Log_Header(logfile, seperator, "Strings")
+    results = Get_StringsInFile(filepath)
+    print(f"Writing strings results to: {strings_logfilepath}")
+    strings_logfile.write(results)
+    logfile.write(f"Writing strings results to: {strings_logfilepath}")
+    logfile.write("\n")
+
+
+    Write_Log_Header(logfile, seperator, "DLL Imports")
+
+    Get_DLLImports(filepath)
+
+
     
-    except FileNotFoundError:
-        print(f"File {filepath} not found")
+    
+    
 
 
 
