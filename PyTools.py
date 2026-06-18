@@ -1,9 +1,39 @@
-import random, wget, magic, hashlib, os, pefile, datetime
+import random, wget, magic, hashlib, os, pefile, datetime, subprocess
+
+def enumerate_linux():
+    # Get the name of the system
+    hostname = subprocess.check_output(["hostname"], text=True)
+    print(f"System Hostname: {hostname.strip()}")
+    
+    #Get the architecture of the system
+    arch = subprocess.check_output(["arch"],text=True)
+    print(f"System Architecture: {arch.strip()}")
+    
+    #Get the ip address
+    ip = subprocess.check_output(["ip","-br", "a"], text=True)
+    ip = ip.split("\n")
+    for line in ip:
+        print(f"IP Address: {line}")
+
+    # Get the system time, timezone, etc.
+    timedate_output = subprocess.check_output(["timedatectl", "show"], text=True)
+    time_settings = {}
+    for line in timedate_output.splitlines():
+        if "=" in line:
+            key, value = line.split("=", 1)
+            time_settings[key] = value
+    
+    print(f"System Time:{time_settings['TimeUSec']}")
+    print(f"System Timezone:{time_settings['Timezone']}")     
+    
+
+   # Get current user     
+    current_user = subprocess.check_output(["whoami"], text=True)
+    print(f"Current User: {current_user}")
 
 
 
 # Function to generate a random password with at least one character from each class with the number of digits specified
-
 def random_password_gen( password_length=25):
     #define the 4 character classes - uppercase, lowercase, digits, special characters in lists
     character_classes = ['uppercase', 'lowercase', 'digits', 'special_characters']
