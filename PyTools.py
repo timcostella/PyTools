@@ -26,11 +26,41 @@ def enumerate_linux():
     print(f"System Time:{time_settings['TimeUSec']}")
     print(f"System Timezone:{time_settings['Timezone']}")     
     
-
    # Get current user     
     current_user = subprocess.check_output(["whoami"], text=True)
-    print(f"Current User: {current_user}")
+    print(f"Current User: {current_user.strip()}")
 
+   # Get current users groups
+    current_user_groups = subprocess.check_output(["id"], text=True)
+    print(f"Current User Group: {current_user_groups.strip()}")
+
+   # Check if current user is a member of sudo groups
+    sudo_groups = ["wheel","sudo"]
+    for group in sudo_groups:
+        if group in current_user_groups.strip():
+            print(f"Current User {current_user.strip()} is a member of sudo group: {group}")
+
+   # Get the environmental variables
+    print(f"Current User: {current_user.strip()} Environmental Variables")
+    for k in sorted(os.environ):
+        print(f"{k}: {os.environ[k]}")
+
+   # Get the location of the bash history 
+    history_file_location = os.environ.get("HISTFILE")
+    if history_file_location is None:
+        history_file_location = os.path.expanduser("~/.bash_history")
+    print(f"Current User: {current_user.strip()} History File Location: {history_file_location.strip()}")
+
+   # Get the current user's bash history 
+    try:
+        with open(history_file_location, 'r') as file:
+            content = file.read()
+            print(content)
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+        
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
 # Function to generate a random password with at least one character from each class with the number of digits specified
