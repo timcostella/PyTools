@@ -114,6 +114,25 @@ def enumerate_linux():
     except:
         print("Unable to cat the /etc/shadow file}")
 
+    # Check for a password in the /etc/passwd file (unlikely)
+    pass_in_passwd_file = False
+    users_on_system = []
+    with open("/etc/passwd") as f:
+        for line in f:
+            user = line.rstrip("\n").split(":")[0]
+            users_on_system.append(user)
+            password_field = line.rstrip("\n").split(":")[1]
+            if password_field != "x":
+                pass_in_passwd_file = True
+                print(f"Password found in /etc/passwd: {password_field} for user {user}")
+               
+        if not pass_in_passwd_file:
+            print ("No passwords found in /etc/passwd")
+
+    #List Users On The System
+    print("Users On The System")
+    print(users_on_system)
+
 # Function to generate a random password with at least one character from each class with the number of digits specified
 def random_password_gen( password_length=25):
     #define the 4 character classes - uppercase, lowercase, digits, special characters in lists
