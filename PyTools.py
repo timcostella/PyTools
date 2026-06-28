@@ -104,6 +104,15 @@ def enumerate_linux():
     except Exception as e:
         print(f"An error occurred: {e}")
 
+    # Get who is currently logged into the system
+    logged_in = subprocess.check_output(["w"], text=True)
+    print(f"Currently Logged In: {logged_in.strip()}")
+
+    # Try and cat the /etc/shadow file (not likely)
+    try:
+        subprocess.check_output(["cat", "/etc/shadow"], text=True)
+    except:
+        print("Unable to cat the /etc/shadow file}")
 
 # Function to generate a random password with at least one character from each class with the number of digits specified
 def random_password_gen( password_length=25):
