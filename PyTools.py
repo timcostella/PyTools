@@ -2,8 +2,11 @@ import random, wget, magic, hashlib, os, pefile, datetime, subprocess
 
 def enumerate_linux():
     # Get the name of the system
-    hostname = subprocess.check_output(["hostname"], text=True)
+    # hostname = subprocess.check_output(["hostname"], text=True)
+    os_uname = os.uname()
+    hostname = os_uname.nodename   
     print(f"System Hostname: {hostname.strip()}")
+
 
     # Get the linux distro name and version
     try:
@@ -15,15 +18,17 @@ def enumerate_linux():
         
     except Exception as e:
         print(f"An error occurred: {e}")
-    
- 
+
+
     #Get the architecture of the system
     arch = subprocess.check_output(["arch"],text=True)
     print(f"System Architecture: {arch.strip()}")
 
+
     #Get the uptime of the system
     uptime = subprocess.check_output(["uptime","-p"],text=True)
     print(f"System Uptime: {uptime.strip()}")
+
 
     # Get the system time, timezone, etc.
     timedate_output = subprocess.check_output(["timedatectl", "show"], text=True)
@@ -36,6 +41,7 @@ def enumerate_linux():
     print(f"System Time:{time_settings['TimeUSec']}")
     print(f"System Timezone:{time_settings['Timezone']}")     
     
+
     #Get the ip address
     print("System IP Information")
     ip = subprocess.check_output(["ip","-br", "a"], text=True)
@@ -56,6 +62,7 @@ def enumerate_linux():
     except Exception as e:
         print(f"An error occurred: {e}")
 
+
     # Get the DNS resolvers
     print("System DNS Resolvers")
     try:
@@ -68,13 +75,22 @@ def enumerate_linux():
     except Exception as e:
         print(f"An error occurred: {e}")
 
+
    # Get current user 
     current_user = subprocess.check_output(["whoami"], text=True)
     print(f"Current User: {current_user.strip()}")
 
+   # Get the current username, id/group id
+    username = os.getlogin()
+    user_id = os.geteuid()
+    group_id = os.getgid()
+    print(f"Current User: {username} ID: {user_id}  Group ID: {group_id}")
+
    # Get current users groups
     current_user_groups = subprocess.check_output(["id"], text=True)
     print(f"Current User Group: {current_user_groups.strip()}")
+    group_ids = os.getgrouplist(os.getlogin())
+    print(f"Group IDs: {group_ids}")
 
    # Check if current user is a member of sudo groups
     sudo_groups = ["wheel","sudo"]
@@ -124,14 +140,22 @@ def enumerate_linux():
             password_field = line.rstrip("\n").split(":")[1]
             if password_field != "x":
                 pass_in_passwd_file = True
-                print(f"Password found in /etc/passwd: {password_field} for user {user}")
+                print(f"Password hash found in /etc/passwd: {password_field} for user {user}")
                
         if not pass_in_passwd_file:
-            print ("No passwords found in /etc/passwd")
+            print ("No password hashes found in /etc/passwd")
 
     #List Users On The System
     print("Users On The System")
     print(users_on_system)
+
+    # List Home Directories
+    print("List Home Directories")
+    for item in os.scandir("/home"):
+        if (item.is_dir):
+            print(f"Directory: {item.name}")
+        else:
+            print(f"File: {item.name}")
 
 # Function to generate a random password with at least one character from each class with the number of digits specified
 def random_password_gen( password_length=25):
